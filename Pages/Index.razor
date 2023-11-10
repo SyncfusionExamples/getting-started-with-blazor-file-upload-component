@@ -1,19 +1,12 @@
 ﻿@page "/"
 
-<SfUploader ID="UploadFiles" AllowedExtensions=".pdf"
-    MinFileSize="1000" MaxFileSize="1000000">
-    <UploaderAsyncSettings SaveUrl="api/SampleData/Save" 
-        RemoveUrl="api/SampleData/Remove"></UploaderAsyncSettings>
-    <UploaderEvents BeforeRemove="BeforeRemove"></UploaderEvents>
-    @*<UploaderEvents ValueChange="OnChange"
-        OnRemove="OnRemove"></UploaderEvents>*@
+<SfUploader ID="UploadFiles" AllowedExtensions=".pdf, .docx, .xls, .xlsx"
+            MinFileSize="1000" MaxFileSize="1000000" AutoUpload="true">
+    <UploaderEvents ValueChange="OnChange"
+    OnRemove="OnRemove"></UploaderEvents>
 </SfUploader>
 
-@code{
-    private void BeforeRemove(BeforeRemoveEventArgs args)
-    {
-        args.PostRawFile = false;
-    }
+@code {
 
     private void OnChange(UploadChangeEventArgs args)
     {
@@ -21,9 +14,8 @@
         {
             var path = @"wwwroot\" + file.FileInfo.Name;
             FileStream filestream = new FileStream(path, FileMode.Create, FileAccess.Write);
-            file.Stream.WriteTo(filestream);
+            file.File.OpenReadStream(long.MaxValue).CopyToAsync(filestream);
             filestream.Close();
-            file.Stream.Close();
         }
     }
     private void OnRemove(RemovingEventArgs args)
