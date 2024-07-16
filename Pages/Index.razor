@@ -2,12 +2,17 @@
 
 <SfUploader ID="UploadFiles" AllowedExtensions=".pdf, .docx, .xls, .xlsx"
             MinFileSize="1000" MaxFileSize="1000000" AutoUpload="true">
+    @* <UploaderAsyncSettings SaveUrl="api/SampleData/Save" *@
+    @*                        RemoveUrl="api/SampleData/Remove"></UploaderAsyncSettings> *@
     <UploaderEvents ValueChange="OnChange"
-    OnRemove="OnRemove"></UploaderEvents>
+                    OnRemove="OnRemove" BeforeRemove="BeforeRemove"></UploaderEvents>
 </SfUploader>
 
 @code {
-
+    private void BeforeRemove(BeforeRemoveEventArgs args)
+    {
+        args.PostRawFile = false;
+    }
     private void OnChange(UploadChangeEventArgs args)
     {
         foreach (var file in args.Files)
@@ -18,6 +23,7 @@
             filestream.Close();
         }
     }
+
     private void OnRemove(RemovingEventArgs args)
     {
         foreach (var removeFile in args.FilesData)
@@ -28,4 +34,5 @@
             }
         }
     }
+
 }
